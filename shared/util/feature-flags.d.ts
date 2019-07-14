@@ -3,6 +3,7 @@ export type FeatureFlags = {
   airdrop: boolean
   chatIndexProfilingEnabled: boolean
   conflictResolution: boolean
+  crypto: boolean
   darkMode: boolean
   dbCleanEnabled: boolean
   fastAccountSwitch: boolean
