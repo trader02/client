@@ -29,6 +29,7 @@ export const desktopTabs = [
   Tabs.walletsTab,
   Tabs.gitTab,
   Tabs.devicesTab,
+  Tabs.cryptoTab,
   Tabs.settingsTab,
 ]
 
