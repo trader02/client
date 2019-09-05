@@ -57,7 +57,7 @@ class BottomLine extends PureComponent<Props> {
       )
     } else if (this.props.participantNeedToRekey) {
       content = (
-        <Text type="BodySmall" negative={true} style={{color: this.props.subColor}}>
+        <Text lineClamp={1} type="BodySmall" negative={true} style={{color: this.props.subColor}}>
           Waiting for participants to rekey...
         </Text>
       )
