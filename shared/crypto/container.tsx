@@ -1,3 +1,4 @@
+import * as React from 'react'
 import * as Container from '../util/container'
 import CryptoRoot from './index'
 
@@ -7,4 +8,9 @@ const mapDispatchToProps = () => ({})
 
 const mergeProps = () => ({})
 
-export default Container.connect(mapStateToProps, mapDispatchToProps, mergeProps)(CryptoRoot)
+const ContainerWrapper = props => <CryptoRoot {...props} />
+ContainerWrapper.navigationOptions = {
+  title: 'Crypto Toolkit',
+}
+
+export default Container.connect(mapStateToProps, mapDispatchToProps, mergeProps)(ContainerWrapper)
