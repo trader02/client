@@ -39,15 +39,13 @@ const EmailInput = ({namespace, search, teamBuildingSearchResults}: EmailInputPr
       // Remove leading or trailing whitespace
       text = text.trim()
       setEmailString(text)
-      const isNewInputValid = validateEmailAddress(text)
-      if (isNewInputValid !== isEmailValid) {
-        setEmailValidity(isNewInputValid)
-      }
-      if (isNewInputValid) {
+      const valid = validateEmailAddress(text)
+      setEmailValidity(valid)
+      if (valid) {
         search(text, 'email')
       }
     },
-    [isEmailValid, search]
+    [search]
   )
 
   const onSubmit = React.useCallback(() => {

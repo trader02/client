@@ -590,7 +590,6 @@ const mergeProps = (
     includeContacts: ownProps.namespace === 'chat2',
     namespace: ownProps.namespace,
     onAdd,
-    onAddRaw: dispatchProps._onAdd,
     onBackspace: deriveOnBackspace(ownProps.searchString, teamSoFar, dispatchProps.onRemove),
     onChangeService: deriveOnChangeService(
       ownProps.onChangeService,
