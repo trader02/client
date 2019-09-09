@@ -26,10 +26,10 @@ const EmailInput = ({namespace, search, teamBuildingSearchResults}: EmailInputPr
   if (
     teamBuildingSearchResults &&
     teamBuildingSearchResults[emailString] &&
-    teamBuildingSearchResults[emailString].keybase &&
-    teamBuildingSearchResults[emailString].keybase[0]
+    teamBuildingSearchResults[emailString].email &&
+    teamBuildingSearchResults[emailString].email[0]
   ) {
-    user = teamBuildingSearchResults[emailString].keybase[0]
+    user = teamBuildingSearchResults[emailString].email[0]
   }
   const canSubmit = !!user && !waiting && isEmailValid
   const emailHasKeybaseAccount = user && user.serviceMap.keybase !== ''

@@ -13,8 +13,6 @@ type PhoneSearchProps = {
   teamBuildingSearchResults: {[query: string]: {[service in ServiceIdWithContact]: Array<User>}}
 }
 
-type CurrentState = 'resolved' | 'loading' | 'notfound' | 'none'
-
 const PhoneSearch = (props: PhoneSearchProps) => {
   const {onContinue} = props
   const [validity, setValidity] = React.useState<boolean>(false)
@@ -30,53 +28,23 @@ const PhoneSearch = (props: PhoneSearchProps) => {
     }
   }
 
-  let state: CurrentState = 'none'
   let user: User | null = null
   if (
     validity &&
     props.teamBuildingSearchResults &&
     props.teamBuildingSearchResults[phoneNumber] &&
-    props.teamBuildingSearchResults[phoneNumber].keybase &&
-    props.teamBuildingSearchResults[phoneNumber].keybase[0]
+    props.teamBuildingSearchResults[phoneNumber].phone &&
+    props.teamBuildingSearchResults[phoneNumber].phone[0]
   ) {
-    let serviceMap = props.teamBuildingSearchResults[phoneNumber].keybase[0].serviceMap
-    let username = props.teamBuildingSearchResults[phoneNumber].keybase[0].serviceMap.keybase
-    let prettyName = props.teamBuildingSearchResults[phoneNumber].keybase[0].prettyName
-    if (serviceMap && username && prettyName) {
-      user = {
-        id: username,
-        prettyName,
-        serviceId: 'keybase',
-        serviceMap,
-        username,
-      }
-      state = 'resolved'
-    }
-  }
-  if (state === 'none' && waiting) {
-    state = 'loading'
-  }
-  if (state === 'none' && validity && props.teamBuildingSearchResults[phoneNumber] !== undefined) {
-    state = 'notfound'
+    user = props.teamBuildingSearchResults[phoneNumber].phone[0]
   }
 
   let _onContinue = React.useCallback(() => {
-    if (!validity) {
+    if (!validity || !user) {
       return
     }
-    if (user) {
-      onContinue(user)
-    } else {
-      // Continue in order to start a conversation with their phone number
-      onContinue({
-        // substr to chop off the '+' at the start so it is in the correct format for an assertion
-        id: phoneNumber.substr(1) + '@phone',
-        prettyName: phoneNumber,
-        serviceId: 'phone',
-        serviceMap: {},
-        username: phoneNumber,
-      })
-    }
+    onContinue(user)
+    // Clear input
     setPhoneNumber('')
     setPhoneInputKey(old => old + 1)
     setValidity(false)
@@ -93,11 +61,11 @@ const PhoneSearch = (props: PhoneSearchProps) => {
             onChangeNumber={onChangeNumberCb}
             onEnterKeyDown={_onContinue}
           />
-          {state === 'resolved' && !!user && <UserMatchMention username={user.username} />}
-          {state === 'loading' && <Kb.ProgressIndicator type="Small" style={styles.loading} />}
+          {!!user && user.serviceMap.keybase && <UserMatchMention username={user.username} />}
+          {waiting && <Kb.ProgressIndicator type="Small" style={styles.loading} />}
         </Kb.Box2>
         <Kb.Box style={styles.spaceFillingBox} />
-        <ContinueButton onClick={_onContinue} disabled={!validity} />
+        <ContinueButton onClick={_onContinue} disabled={!validity && !!user} />
       </Kb.Box2>
     </>
   )
