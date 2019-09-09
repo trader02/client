@@ -36,9 +36,10 @@ const (
 )
 
 type download struct {
-	info  keybase1.DownloadInfo
-	state keybase1.DownloadState
-	opid  keybase1.OpID
+	info         keybase1.DownloadInfo
+	safeFilename string
+	state        keybase1.DownloadState
+	opid         keybase1.OpID
 }
 
 // downloadManager manages "downloads" initiated from outside KBFS. To KBFS,
@@ -144,16 +145,21 @@ func (m *downloadManager) getDownloadDir() string {
 	return m.downloadDir
 }
 
+func (m *downloadManager) getFilenames(
+	kbfsPath keybase1.KBFSPath) (filename, safeFilename string) {
+	_, filename = path.Split(path.Clean(kbfsPath.Path))
+	return filename, libkb.GetSafeFilename(filename)
+}
+
 func (m *downloadManager) getDownloadPath(
-	ctx context.Context, kbfsPath keybase1.KBFSPath, downloadID string) (
-	downloadPath string, filename string, err error) {
+	ctx context.Context, filename, downloadID string) (
+	downloadPath string, err error) {
 	parentDir := filepath.Join(m.getCacheDir(), "simplefsdownload")
 	if err = os.MkdirAll(parentDir, 0700); err != nil {
-		return "", "", err
+		return "", err
 	}
-	_, filename = path.Split(path.Clean(kbfsPath.Path))
-	downloadPath = filepath.Join(parentDir, downloadID+path.Ext(kbfsPath.Path))
-	return downloadPath, filename, nil
+	downloadPath = filepath.Join(parentDir, downloadID+path.Ext(filename))
+	return downloadPath, nil
 }
 
 func (m *downloadManager) moveToDownloadFolder(
@@ -230,7 +236,7 @@ func (m *downloadManager) waitForDownload(ctx context.Context,
 
 	var localPath string
 	if d.info.IsRegularDownload {
-		if localPath, err = m.moveToDownloadFolder(ctx, downloadPath, d.info.Filename); err != nil {
+		if localPath, err = m.moveToDownloadFolder(ctx, downloadPath, d.safeFilename); err != nil {
 			done(err)
 			return
 		}
@@ -252,7 +258,8 @@ func (m *downloadManager) startDownload(
 		return "", err
 	}
 	downloadID = strconv.FormatInt(time.Now().UnixNano(), 16)
-	downloadPath, filename, err := m.getDownloadPath(ctx, arg.Path, downloadID)
+	filename, safeFilename := m.getFilenames(arg.Path)
+	downloadPath, err := m.getDownloadPath(ctx, filename, downloadID)
 	if err != nil {
 		return "", err
 	}
@@ -278,7 +285,8 @@ func (m *downloadManager) startDownload(
 				StartTime:         keybase1.ToTime(time.Now()),
 				IsRegularDownload: arg.IsRegularDownload,
 			},
-			opid: opid,
+			opid:         opid,
+			safeFilename: safeFilename,
 			state: keybase1.DownloadState{
 				DownloadID: downloadID,
 			},
