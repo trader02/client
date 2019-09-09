@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as Sb from '../stories/storybook'
 import * as Types from '../constants/types/team-building'
-import emailInput from './email-input/index.stories'
+import emailSearch from './email-search/index.stories'
 import UserBubble from './user-bubble'
 import TeamBuilding from './index'
 import Input from './input'
@@ -758,7 +758,7 @@ const load = () => {
     <PhoneSearch namespace="chat2" search={Sb.action('search')} teamBuildingSearchResults={{}} />
   ))
 
-  emailInput()
+  emailSearch()
 }
 
 export default load
