@@ -602,3 +602,26 @@ func TestEditHistoryRenameDirAndReuseNameForLink(t *testing.T) {
 		),
 	)
 }
+
+func TestEditHistoryRenamedThenDeleted(t *testing.T) {
+	test(t, journal(), batchSize(20),
+		users("alice"),
+		as(alice,
+			enableJournal(),
+			mkdir("a"),
+			mkfile("a/b.doc", ""),
+			pwriteBSSync("a/b.doc", []byte("hello"), 0, false),
+			mkfile("a/b.tmp", ""),
+			pwriteBSSync("a/b.tmp", []byte("world"), 0, false),
+		),
+		as(alice,
+			rename("a/b.doc", "a/b2.tmp"),
+			rename("a/b.tmp", "a/b.doc"),
+			pwriteBSSync("a/b.doc", []byte("world2"), 0, false),
+			rm("a/b2.tmp"),
+		),
+		as(alice,
+			read("a/b.doc", "world2"),
+		),
+	)
+}
