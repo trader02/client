@@ -97,7 +97,7 @@ func SendChatInviteWelcomeMessage(ctx context.Context, g *libkb.GlobalContext, t
 }
 
 func SendChatSBSResolutionMessage(ctx context.Context, g *libkb.GlobalContext,
-	team, assertionUser, assertionService string,
+	convID chat1.ConversationID, team, assertionUser, assertionService string,
 	prover keybase1.UID) (res bool) {
 
 	if !g.Env.SendSystemChatMessages() {
@@ -118,11 +118,8 @@ func SendChatSBSResolutionMessage(ctx context.Context, g *libkb.GlobalContext,
 		AssertionService:  assertionService,
 	})
 	body := chat1.NewMessageBodyWithSystem(subBody)
-
-	if err = g.ChatHelper.SendMsgByName(ctx, team, nil,
-		chat1.ConversationMembersType_IMPTEAMNATIVE,
-		keybase1.TLFIdentifyBehavior_CHAT_CLI, body,
-		chat1.MessageType_SYSTEM); err != nil {
+	if err = g.ChatHelper.SendMsgByID(ctx, convID, team, body,
+		chat1.MessageType_SYSTEM, keybase1.TLFVisibility_PRIVATE); err != nil {
 		g.Log.CDebugf(ctx, "SendChatSBSResolutionMessage: failed to send message: %s", err)
 		return false
 	}

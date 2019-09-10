@@ -6,6 +6,9 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/keybase/client/go/protocol/chat1"
+	"github.com/keybase/client/go/protocol/gregor1"
+
 	"github.com/keybase/client/go/engine"
 	"github.com/keybase/client/go/gregor"
 	"github.com/keybase/client/go/libkb"
@@ -445,6 +448,22 @@ func handleSBSSingle(ctx context.Context, g *libkb.GlobalContext, teamID keybase
 			return removeInviteID(ctx, team, invite.Id)
 		}
 
+		var convID chat1.ConversationID
+		var iteamName string
+		if team.IsImplicit() {
+			iteamName, err = team.ImplicitTeamDisplayNameString(ctx)
+			if err != nil {
+				return err
+			}
+			uid := gregor1.UID(g.ActiveDevice.UID().ToBytes())
+			conv, err := g.ChatHelper.NewConversation(ctx, uid, iteamName, nil,
+				chat1.TopicType_CHAT, chat1.ConversationMembersType_IMPTEAMNATIVE, keybase1.TLFVisibility_PRIVATE)
+			if err != nil {
+				return err
+			}
+			convID = conv.GetConvID()
+		}
+
 		tx := CreateAddMemberTx(team)
 		if err := tx.AddMemberBySBS(ctx, verifiedInvitee, invite.Role); err != nil {
 			return err
@@ -455,13 +474,9 @@ func handleSBSSingle(ctx context.Context, g *libkb.GlobalContext, teamID keybase
 
 		// Send chat welcome message
 		if team.IsImplicit() {
-			iteamName, err := team.ImplicitTeamDisplayNameString(ctx)
-			if err != nil {
-				return err
-			}
 			g.Log.CDebugf(ctx,
 				"sending resolution message for successful SBS handle")
-			SendChatSBSResolutionMessage(ctx, g, iteamName,
+			SendChatSBSResolutionMessage(ctx, g, convID, iteamName,
 				string(invite.Name), ityp, verifiedInvitee.Uid)
 
 		} else {
