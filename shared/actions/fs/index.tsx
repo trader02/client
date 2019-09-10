@@ -924,7 +924,7 @@ const subscribePath = (_: TypedState, action: FsGen.SubscribePathPayload) =>
     kbfsPath: Types.pathToString(action.payload.path),
     subscriptionID: action.payload.subscriptionID,
     topic: action.payload.topic,
-  }).catch(makeUnretriableErrorHandler(action))
+  }).catch(makeUnretriableErrorHandler(action, action.payload.path))
 
 const subscribeNonPath = (_: TypedState, action: FsGen.SubscribeNonPathPayload) =>
   RPCTypes.SimpleFSSimpleFSSubscribeNonPathRpcPromise({
