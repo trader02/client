@@ -32,7 +32,6 @@ const EmailSearch = ({namespace, search, teamBuildingSearchResults}: EmailSearch
     user = teamBuildingSearchResults[emailString].email[0]
   }
   const canSubmit = !!user && !waiting && isEmailValid
-  const emailHasKeybaseAccount = user && user.serviceMap.keybase !== ''
 
   const onChange = React.useCallback(
     text => {
@@ -76,7 +75,7 @@ const EmailSearch = ({namespace, search, teamBuildingSearchResults}: EmailSearch
             <Kb.ProgressIndicator type="Small" />
           </Kb.Box2>
         )}
-        {!!user && canSubmit && emailHasKeybaseAccount && user.serviceMap.keybase && (
+        {!!user && canSubmit && user.serviceMap.keybase && (
           <UserMatchMention username={user.serviceMap.keybase} />
         )}
         {/* TODO: add support for multiple emails  */}
