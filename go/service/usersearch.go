@@ -345,7 +345,6 @@ func (h *UserSearchHandler) imptofuSearch(mctx libkb.MetaContext, arg keybase1.U
 				Assertion:      assertion.String(),
 				AssertionKey:   assertion.GetKey(),
 				AssertionValue: assertion.GetValue(),
-				PrettyName:     arg.Query,
 			}
 			if usernames != nil {
 				if uname, found := usernames[v.UID]; found {
@@ -384,7 +383,6 @@ func (h *UserSearchHandler) imptofuSearch(mctx libkb.MetaContext, arg keybase1.U
 		Assertion:      assertion.String(),
 		AssertionKey:   assertion.GetKey(),
 		AssertionValue: assertion.GetValue(),
-		PrettyName:     arg.Query,
 	}
 	res = []keybase1.APIUserSearchResult{{
 		Score:   1.0,
