@@ -53,19 +53,22 @@ const PathInfo_ = (props: PathInfoProps) => {
 
 export default PathInfo_
 
-const styles = Styles.styleSheetCreate(() => ({
-  headerCopyUniversalPath: {
-    marginTop: Styles.globalMargins.tiny,
-  },
-  headerLocalPath: Styles.platformStyles({
-    common: {
-      backgroundColor: Styles.globalColors.blueLighter3,
-    },
-    isElectron: {
-      wordBreak: 'break-all',
-    },
-  }),
-  headerMountPointTip: {
-    marginTop: Styles.globalMargins.small,
-  },
-}))
+const styles = Styles.styleSheetCreate(
+  () =>
+    ({
+      headerCopyUniversalPath: {
+        marginTop: Styles.globalMargins.tiny,
+      },
+      headerLocalPath: Styles.platformStyles({
+        common: {
+          backgroundColor: Styles.globalColors.blueLighter3,
+        },
+        isElectron: {
+          wordBreak: 'break-all',
+        },
+      }),
+      headerMountPointTip: {
+        marginTop: Styles.globalMargins.small,
+      },
+    } as const)
+)
